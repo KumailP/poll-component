@@ -4,14 +4,19 @@ import Poll from "./components/Poll";
 
 const options = [
   {
+    label: "Cloud9",
+    percentage: null,
+    imgUrl: "Images/PartyD.png"
+  },
+  {
     label: "Natus Vincere",
     percentage: null,
-    imageURL: null
+    imgUrl: "Images/PartyB.png"
   },
   {
     label: "Fnatic",
     percentage: null,
-    imageURL: null
+    imgUrl: "Images/PartyC.png"
   }
 ];
 
