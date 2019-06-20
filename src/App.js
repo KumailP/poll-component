@@ -17,13 +17,48 @@ const options = [
     label: "Fnatic",
     percentage: null,
     imgUrl: "Images/PartyC.png"
+  },
+  {
+    label: "OG",
+    percentage: null,
+    imgUrl: "Images/PartyA.png"
+  },
+  {
+    label: "Virtus Pro",
+    percentage: null,
+    imgUrl: "Images/PartyE.png"
+  },
+  {
+    label: "Ninjas in Pyjamas",
+    percentage: null,
+    imgUrl: "Images/PartyF.png"
+  },
+  {
+    label: "Astralis",
+    percentage: null,
+    imgUrl: "Images/PartyG.png"
+  },
+  {
+    label: "Optic Gaming",
+    percentage: null,
+    imgUrl: "Images/PartyH.png"
+  },
+  {
+    label: "SK Gaming",
+    percentage: null,
+    imgUrl: "Images/PartyI.png"
+  },
+  {
+    label: "FaZe Clan",
+    percentage: null,
+    imgUrl: "Images/PartyJ.png"
   }
 ];
 
 function App() {
   return (
     <div className="App App-header">
-      <Poll options={options} />
+      <Poll options={options.slice(1,4)} />
     </div>
   );
 }
