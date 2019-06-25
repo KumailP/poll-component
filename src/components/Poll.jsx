@@ -29,18 +29,76 @@ const Card = styled.div`
   }
 `;
 
+const SecondaryCard = styled(Card)`
+  flex-direction: column;
+`;
+
+const Bar = styled.div`
+  height: 100%;
+  width: ${({ size }) => size}%;
+  display: flex;
+  flex-wrap: no-wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  overflow: hidden;
+  background-color: ${({ color }) => color};
+`;
+
+const SecondBar = styled.div`
+  width: ${({ size }) => 100 - size}%;
+  height: 100%;
+`;
+
+const MainBar = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  height: ${({ boxes }) => 100 / boxes}%;
+
+  :not(:first-child) {
+    margin-top: 0.5%;
+  }
+`;
+
+const DetailsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  height: 100%;
+`;
+
 const CardLabel = styled.h1`
   padding: 0;
-  font-size: ${({noOfBoxes, fontSize}) => (noOfBoxes < 7 ? fontSize * 2 : fontSize * 1.5)}px;
+  font-size: ${({ noOfBoxes, fontSize }) =>
+    noOfBoxes < 7 ? fontSize * 2 : fontSize * 1.5}px;
   font-weight: 700;
   margin: auto;
   text-align: center;
   pointer-events: none;
 `;
 
+const SecondaryLabel = styled(CardLabel)`
+  margin: 0;
+  text-align: left;
+  color: ${({ color }) => color};
+`;
+
+const Percentage = styled.h1`
+  padding: 0;
+  margin: 0 5px;
+  color: ${({ color }) => color};
+  font-size: ${({ noOfBoxes, fontSize }) =>
+    noOfBoxes < 7 ? fontSize * 2 : fontSize * 1.5}px;
+`;
+
 const CardImage = styled.img`
   height: 70%;
   margin: auto 5%;
+`;
+
+const SecondaryImage = styled(CardImage)`
+  margin: auto 0px;
+  margin-right: 10px;
 `;
 
 const Btns = styled.div`
@@ -155,45 +213,93 @@ export default class Poll extends Component {
     const fontSize = this.getFontSize();
     const padding = this.getTextPadding();
 
-    return (
-      <Main>
+    const votingButtons = options.map((option, i) => (
+      <Card key={option.label}>
+        {option.imgUrl && (
+          <CardImage src={option.imgUrl} alt={option.label} boxes={noOfBoxes} />
+        )}
+        <CardLabel
+          fontSize={noOfBoxes < 6 ? fontSize : 12}
+          style={{ color: colors.length > 0 && colors[i] }}
+          noOfBoxes={noOfBoxes}
+        >
+          {option.label}
+        </CardLabel>
+        <Btns>
+          <VoteBtn color={colors[i]} padding={padding}>
+            <BtnText boxes={noOfBoxes} fontSize={fontSize}>
+              V{noOfBoxes < 7 ? "ote" : null}
+            </BtnText>
+          </VoteBtn>
+          <BoostBtn color={colors[i]} padding={padding}>
+            <BtnText boxes={noOfBoxes} fontSize={fontSize}>
+              B{noOfBoxes < 7 ? "oost" : null}
+            </BtnText>
+          </BoostBtn>
+        </Btns>
+      </Card>
+    ));
+
+    const results = (
+      <SecondaryCard>
         {options.map((option, i) => (
-          <Card key={option.label}>
-            {option.imgUrl && (
-              <CardImage
-                src={option.imgUrl}
-                alt={option.label}
-                boxes={noOfBoxes}
-              />
-            )}
-            <CardLabel
-              fontSize={noOfBoxes < 6 ? fontSize : 12}
-              style={{ color: colors.length > 0 && colors[i] }}
-              noOfBoxes={noOfBoxes}
-            >
-              {option.label}
-            </CardLabel>
-            <Btns>
-              <VoteBtn color={colors[i]} padding={padding}>
-                <BtnText
-                  boxes={noOfBoxes}
-                  fontSize={fontSize}
-                >
-                  V{noOfBoxes < 7 ? "ote" : null}
-                </BtnText>
-              </VoteBtn>
-              <BoostBtn color={colors[i]} padding={padding}>
-                <BtnText
-                  boxes={noOfBoxes}
-                  fontSize={fontSize}
-                >
-                  B{noOfBoxes < 7 ? "oost" : null}
-                </BtnText>
-              </BoostBtn>
-            </Btns>
-          </Card>
+          <MainBar boxes={noOfBoxes}>
+            <Bar boxes={noOfBoxes} color={colors[i]} size={option.percentage}>
+              {option.percentage >= 30 ? (
+                <DetailsContainer>
+                  <SecondaryImage
+                    src={option.imgUrl}
+                    alt={option.label}
+                    boxes={noOfBoxes}
+                  />
+                  <SecondaryLabel
+                    fontSize={noOfBoxes < 6 ? fontSize : 12}
+                    color={"#000"}
+                    noOfBoxes={noOfBoxes}
+                  >
+                    {option.label}
+                  </SecondaryLabel>
+                  <Percentage
+                    color={"#000"}
+                    noOfBoxes={noOfBoxes}
+                    fontSize={noOfBoxes < 6 ? fontSize : 12}
+                  >
+                    {option.percentage}%
+                  </Percentage>
+                </DetailsContainer>
+              ) : null}
+            </Bar>
+            <SecondBar boxes={noOfBoxes} size={option.percentage}>
+              {option.percentage < 30 ? (
+                <DetailsContainer>
+                  <Percentage
+                    color={colors[i]}
+                    noOfBoxes={noOfBoxes}
+                    fontSize={noOfBoxes < 6 ? fontSize : 12}
+                  >
+                    {option.percentage}%
+                  </Percentage>
+                  >
+                  <SecondaryImage
+                    src={option.imgUrl}
+                    alt={option.label}
+                    boxes={noOfBoxes}
+                  />
+                  <SecondaryLabel
+                    fontSize={noOfBoxes < 6 ? fontSize : 12}
+                    color={colors[i]}
+                    noOfBoxes={noOfBoxes}
+                  >
+                    {option.label}
+                  </SecondaryLabel>
+                </DetailsContainer>
+              ) : null}
+            </SecondBar>
+          </MainBar>
         ))}
-      </Main>
+      </SecondaryCard>
     );
+
+    return <Main>{results}</Main>;
   }
 }

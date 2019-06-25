@@ -5,52 +5,52 @@ import Poll from "./components/Poll";
 const options = [
   {
     label: "Cloud9",
-    percentage: null,
+    percentage: 30,
     imgUrl: "Images/PartyD.png"
   },
   {
     label: "Natus Vincere",
-    percentage: null,
+    percentage: 20,
     imgUrl: "Images/PartyB.png"
   },
   {
     label: "Fnatic",
-    percentage: null,
+    percentage: 20,
     imgUrl: "Images/PartyC.png"
   },
   {
     label: "OG",
-    percentage: null,
+    percentage: 15,
     imgUrl: "Images/PartyA.png"
   },
   {
     label: "Virtus Pro",
-    percentage: null,
+    percentage: 7,
     imgUrl: "Images/PartyE.png"
   },
   {
     label: "Ninjas in Pyjamas",
-    percentage: null,
+    percentage: 2,
     imgUrl: "Images/PartyF.png"
   },
   {
     label: "Astralis",
-    percentage: null,
+    percentage: 2,
     imgUrl: "Images/PartyG.png"
   },
   {
     label: "Optic Gaming",
-    percentage: null,
+    percentage: 2,
     imgUrl: "Images/PartyH.png"
   },
   {
     label: "SK Gaming",
-    percentage: null,
+    percentage: 1,
     imgUrl: "Images/PartyI.png"
   },
   {
     label: "FaZe Clan",
-    percentage: null,
+    percentage: 1,
     imgUrl: "Images/PartyJ.png"
   }
 ];
@@ -58,7 +58,7 @@ const options = [
 function App() {
   return (
     <div className="App App-header">
-      <Poll options={options.slice(1, 10)} />
+      <Poll options={options.slice(0, 10)} />
     </div>
   );
 }
