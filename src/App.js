@@ -5,7 +5,7 @@ import Poll from "./components/Poll";
 const options = [
   {
     label: "Cloud9",
-    percentage: 45,
+    percentage: 50,
     imgUrl: "Images/PartyD.png"
   },
   {

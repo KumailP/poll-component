@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { Spring } from "react-spring/renderprops";
 
 const Main = styled.div`
   background-color: #1a2833;
@@ -173,43 +174,34 @@ export default class Poll extends Component {
     this.setState({ colors, noOfBoxes });
   }
 
-  static getDerivedStateFromProps(props, state) {
-    if (state.flag) {
-      const options = props.options.map((v, i) => {
-        return { ...v, percentage: 0 };
-      });
-      return { originalOptions: props.options, options, flag: false };
-    }
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (prevState.votingMode && !this.state.votingMode) {
+  //     this.triggerAnimation();
+  //   }
+  // }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.votingMode && !this.state.votingMode) {
-      this.triggerAnimation();
-    }
-  }
+  // triggerAnimation = () => {
+  //   console.log("triggering animation with: ", this.state.options);
+  //   let { originalOptions, options } = this.state;
+  //   const percentIncrease = originalOptions.map((v, i) => {
+  //     return parseFloat(v.percentage) / 100.0;
+  //   });
+  //   console.log(percentIncrease);
 
-  triggerAnimation = () => {
-    console.log("triggering animation with: ", this.state.options);
-    let { originalOptions, options } = this.state;
-    const percentIncrease = originalOptions.map((v, i) => {
-      return parseFloat(v.percentage) / 100.0;
-    });
-    console.log(percentIncrease);
-
-    let intervali = 0;
-    this.animationTimer = setInterval(() => {
-      if (++intervali === 100) {
-        clearInterval(this.animationTimer);
-      }
-      options = options.map((option, i) => {
-        return {
-          ...option,
-          percentage: option.percentage + percentIncrease[i]
-        };
-      });
-      this.setState({ options });
-    }, 10);
-  };
+  //   let intervali = 0;
+  //   this.animationTimer = setInterval(() => {
+  //     if (++intervali === 100) {
+  //       clearInterval(this.animationTimer);
+  //     }
+  //     options = options.map((option, i) => {
+  //       return {
+  //         ...option,
+  //         percentage: option.percentage + percentIncrease[i]
+  //       };
+  //     });
+  //     this.setState({ options });
+  //   }, 10);
+  // };
 
   getRandomColor = () => {
     var letters = "0123456789ABCDEF";
@@ -273,8 +265,8 @@ export default class Poll extends Component {
   };
 
   render() {
-    const { colors, noOfBoxes, votingMode, options } = this.state;
-    // const { options } = this.props;
+    const { colors, noOfBoxes, votingMode } = this.state;
+    const { options } = this.props;
     const fontSize = this.getFontSize();
     const padding = this.getTextPadding();
 
@@ -317,31 +309,38 @@ export default class Poll extends Component {
       <SecondaryCard>
         {options.map((option, i) => (
           <MainBar key={option.label} boxes={noOfBoxes}>
-            <Bar boxes={noOfBoxes} color={colors[i]} size={option.percentage}>
-              {this.isLeft(option.percentage) ? (
-                <DetailsContainer rightAlign={true}>
-                  <SecondaryImage
-                    src={option.imgUrl}
-                    alt={option.label}
-                    boxes={noOfBoxes}
-                  />
-                  <SecondaryLabel
-                    fontSize={noOfBoxes < 6 ? fontSize : 12}
-                    color={"#000"}
-                    noOfBoxes={noOfBoxes}
-                  >
-                    {option.label}
-                  </SecondaryLabel>
-                  <Percentage
-                    color={"#000"}
-                    noOfBoxes={noOfBoxes}
-                    fontSize={noOfBoxes < 6 ? fontSize : 12}
-                  >
-                    {option.percentage.toFixed(2)}%
-                  </Percentage>
-                </DetailsContainer>
-              ) : null}
-            </Bar>
+            <Spring
+              from={{ value: 0 }}
+              to={{ value: parseFloat(option.percentage) }}
+            >
+              {props => (
+                <Bar boxes={noOfBoxes} color={colors[i]} size={props.value}>
+                  {this.isLeft(option.percentage) ? (
+                    <DetailsContainer rightAlign={true}>
+                      <SecondaryImage
+                        src={option.imgUrl}
+                        alt={option.label}
+                        boxes={noOfBoxes}
+                      />
+                      <SecondaryLabel
+                        fontSize={noOfBoxes < 6 ? fontSize : 12}
+                        color={"#000"}
+                        noOfBoxes={noOfBoxes}
+                      >
+                        {option.label}
+                      </SecondaryLabel>
+                      <Percentage
+                        color={"#000"}
+                        noOfBoxes={noOfBoxes}
+                        fontSize={noOfBoxes < 6 ? fontSize : 12}
+                      >
+                        {option.percentage}%
+                      </Percentage>
+                    </DetailsContainer>
+                  ) : null}
+                </Bar>
+              )}
+            </Spring>
             <SecondBar boxes={noOfBoxes} size={option.percentage}>
               {!this.isLeft(option.percentage) ? (
                 <DetailsContainer>
@@ -350,7 +349,7 @@ export default class Poll extends Component {
                     noOfBoxes={noOfBoxes}
                     fontSize={noOfBoxes < 6 ? fontSize : 12}
                   >
-                    {option.percentage.toFixed(2)}%
+                    {option.percentage}%
                   </Percentage>
 
                   <SecondaryImage
