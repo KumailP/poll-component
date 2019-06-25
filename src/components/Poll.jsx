@@ -63,7 +63,8 @@ const MainBar = styled.div`
 const DetailsContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: flex-${({ rightAlign }) => (rightAlign ? "end" : "start")};
+  width: 100%;
   height: 100%;
 `;
 
@@ -78,17 +79,18 @@ const CardLabel = styled.h1`
 `;
 
 const SecondaryLabel = styled(CardLabel)`
-  margin: 0;
+  margin: auto 0px;
   text-align: left;
   color: ${({ color }) => color};
+  font-size: ${({ fontSize }) => fontSize}px;
 `;
 
 const Percentage = styled.h1`
   padding: 0;
-  margin: 0 5px;
+  margin: auto 5px;
   color: ${({ color }) => color};
   font-size: ${({ noOfBoxes, fontSize }) =>
-    noOfBoxes < 7 ? fontSize * 2 : fontSize * 1.5}px;
+    noOfBoxes < 7 ? fontSize * 1.5 : fontSize}px;
 `;
 
 const CardImage = styled.img`
@@ -97,8 +99,8 @@ const CardImage = styled.img`
 `;
 
 const SecondaryImage = styled(CardImage)`
-  margin: auto 0px;
-  margin-right: 10px;
+  margin: auto 10px;
+  height: ${({ boxes }) => (boxes < 5 ? "40" : "70")}%;
 `;
 
 const Btns = styled.div`
@@ -207,6 +209,18 @@ export default class Poll extends Component {
     return 15;
   };
 
+  isLeft = percentage => {
+    const { noOfBoxes } = this.state;
+    let left = false;
+
+    if (percentage > 30) {
+      if (noOfBoxes >= 5) {
+        left = true;
+      }
+    }
+    return left;
+  };
+
   render() {
     const { colors, noOfBoxes } = this.state;
     const { options } = this.props;
@@ -245,8 +259,8 @@ export default class Poll extends Component {
         {options.map((option, i) => (
           <MainBar boxes={noOfBoxes}>
             <Bar boxes={noOfBoxes} color={colors[i]} size={option.percentage}>
-              {option.percentage >= 30 ? (
-                <DetailsContainer>
+              {this.isLeft(option.percentage) ? (
+                <DetailsContainer rightAlign={true}>
                   <SecondaryImage
                     src={option.imgUrl}
                     alt={option.label}
@@ -270,7 +284,7 @@ export default class Poll extends Component {
               ) : null}
             </Bar>
             <SecondBar boxes={noOfBoxes} size={option.percentage}>
-              {option.percentage < 30 ? (
+              {!this.isLeft(option.percentage) ? (
                 <DetailsContainer>
                   <Percentage
                     color={colors[i]}
@@ -279,7 +293,7 @@ export default class Poll extends Component {
                   >
                     {option.percentage}%
                   </Percentage>
-                  >
+
                   <SecondaryImage
                     src={option.imgUrl}
                     alt={option.label}

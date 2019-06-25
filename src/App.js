@@ -5,7 +5,7 @@ import Poll from "./components/Poll";
 const options = [
   {
     label: "Cloud9",
-    percentage: 30,
+    percentage: 45,
     imgUrl: "Images/PartyD.png"
   },
   {
@@ -15,12 +15,12 @@ const options = [
   },
   {
     label: "Fnatic",
-    percentage: 20,
+    percentage: 15,
     imgUrl: "Images/PartyC.png"
   },
   {
     label: "OG",
-    percentage: 15,
+    percentage: 10,
     imgUrl: "Images/PartyA.png"
   },
   {
