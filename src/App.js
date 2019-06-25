@@ -58,7 +58,7 @@ const options = [
 function App() {
   return (
     <div className="App App-header">
-      <Poll options={options.slice(1,4)} />
+      <Poll options={options.slice(1, 10)} />
     </div>
   );
 }

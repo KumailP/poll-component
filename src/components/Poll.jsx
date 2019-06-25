@@ -4,7 +4,6 @@ import styled from "styled-components";
 const Main = styled.div`
   background-color: #1a2833;
   font-family: "Oswald", sans-serif;
-  padding: 10px;
   width: 500px;
   height: 300px;
   display: flex;
@@ -14,8 +13,9 @@ const Main = styled.div`
 `;
 
 const Card = styled.div`
+  margin: 1%;
   background-color: #ffffff;
-  width: 100%;
+  width: 98%;
   flex-basis: 100%;
   height: 100%;
   display: flex;
@@ -25,13 +25,13 @@ const Card = styled.div`
   overflow: hidden;
 
   :not(:first-child) {
-    margin-top: 5px;
+    margin-top: 0px;
   }
 `;
 
 const CardLabel = styled.h1`
   padding: 0;
-  font-size: ${props => (props.fontSize ? props.fontSize * 2 : "24")}px;
+  font-size: ${({noOfBoxes, fontSize}) => (noOfBoxes < 7 ? fontSize * 2 : fontSize * 1.5)}px;
   font-weight: 700;
   margin: auto;
   text-align: center;
@@ -51,12 +51,12 @@ const Btns = styled.div`
 `;
 
 const VoteBtn = styled.div`
-  padding: 0px 10px;
+  padding: 0px ${({ padding }) => padding}px;
   cursor: pointer;
   position: relative;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   background-color: #fff;
-  color: ${props => (props.color ? props.color : "red")};
+  color: ${({ color }) => (color ? color : "red")};
   transition: 0.3s all ease;
 
   &:hover {
@@ -69,18 +69,24 @@ const BtnText = styled.span`
   height: 100%;
   font-weight: bold;
   text-transform: uppercase;
-  font-size: ${props => props.fontSize}px;
-  writing-mode: ${props => props.writingMode};
-  transform: rotate(180deg);
+  font-size: ${({ fontSize }) => fontSize}px;
+  writing-mode: ${({ boxes }) =>
+    boxes >= 7 ? "horizontal-lr" : "vertical-rl"};
+  transform: ${({ boxes }) => (boxes >= 7 ? "rotate(0deg)" : "rotate(180deg)")};
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `;
 
 const BoostBtn = styled(VoteBtn)`
   flex: 1;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   color: #fff;
-  background-color: ${props => (props.color ? props.color : "red")};
+  background-color: ${({ color }) => (color ? color : "red")};
   &:hover {
-    background-color: ${props => (props.color ? props.color : "red")};
+    background-color: ${({ color }) => (color ? color : "red")};
     color: #fafafa;
   }
 `;
@@ -115,23 +121,39 @@ export default class Poll extends Component {
 
     if (noOfBoxes >= 1 && noOfBoxes <= 2) {
       return 23;
-    } else if (noOfBoxes >= 3 && noOfBoxes <= 6) {
-      return 16;
-    } else if (noOfBoxes >= 7 && noOfBoxes < 8) {
-      return 12;
-    } else if (noOfBoxes >= 8) {
-      return 8;
+    } else if (noOfBoxes >= 3 && noOfBoxes <= 4) {
+      return 20;
+    } else if (noOfBoxes >= 4 && noOfBoxes < 7) {
+      return 15;
+    } else if (noOfBoxes >= 7) {
+      return 20;
     }
 
     return 24;
   };
 
+  getTextPadding = () => {
+    const { noOfBoxes } = this.state;
+    console.log(noOfBoxes);
+
+    if (noOfBoxes >= 1 && noOfBoxes <= 2) {
+      return 20;
+    } else if (noOfBoxes >= 3 && noOfBoxes <= 4) {
+      return 17;
+    } else if (noOfBoxes >= 4 && noOfBoxes < 7) {
+      return 13;
+    } else if (noOfBoxes >= 7) {
+      return 14;
+    }
+
+    return 15;
+  };
+
   render() {
     const { colors, noOfBoxes } = this.state;
     const { options } = this.props;
-    console.log(options);
     const fontSize = this.getFontSize();
-    console.log(fontSize);
+    const padding = this.getTextPadding();
 
     return (
       <Main>
@@ -145,20 +167,27 @@ export default class Poll extends Component {
               />
             )}
             <CardLabel
-              fontSize={fontSize}
+              fontSize={noOfBoxes < 6 ? fontSize : 12}
               style={{ color: colors.length > 0 && colors[i] }}
+              noOfBoxes={noOfBoxes}
             >
               {option.label}
             </CardLabel>
             <Btns>
-              <VoteBtn color={colors[i]}>
-                <BtnText writingMode={noOfBoxes >= 8 ? "horizontal-lr" : "vertical-rl"} fontSize={noOfBoxes >= 8 ? fontSize * 2 : fontSize}>
-                  V{noOfBoxes < 8 ? "ote" : null}
+              <VoteBtn color={colors[i]} padding={padding}>
+                <BtnText
+                  boxes={noOfBoxes}
+                  fontSize={fontSize}
+                >
+                  V{noOfBoxes < 7 ? "ote" : null}
                 </BtnText>
               </VoteBtn>
-              <BoostBtn color={colors[i]}>
-                <BtnText writingMode={noOfBoxes >= 8 ? "horizontal-lr" : "vertical-rl"} fontSize={noOfBoxes >= 8 ? fontSize * 2 : fontSize}>
-                  B{noOfBoxes < 8 ? "oost" : null}
+              <BoostBtn color={colors[i]} padding={padding}>
+                <BtnText
+                  boxes={noOfBoxes}
+                  fontSize={fontSize}
+                >
+                  B{noOfBoxes < 7 ? "oost" : null}
                 </BtnText>
               </BoostBtn>
             </Btns>
