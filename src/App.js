@@ -20,7 +20,7 @@ const options = [
   },
   {
     label: "OG",
-    percentage: 10,
+    percentage: 60,
     imgUrl: "Images/PartyA.png"
   },
   {

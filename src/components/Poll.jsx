@@ -64,7 +64,8 @@ const MainBar = styled.div`
 const DetailsContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex- ${({ rightAlign }) => (rightAlign ? "end" : "start")};
+  justify-content: ${({ rightAlign }) =>
+    rightAlign ? "flex-end" : "flex-start"};
   width: 100%;
   height: 100%;
 `;
@@ -174,34 +175,15 @@ export default class Poll extends Component {
     this.setState({ colors, noOfBoxes });
   }
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (prevState.votingMode && !this.state.votingMode) {
-  //     this.triggerAnimation();
-  //   }
-  // }
+  static getDerivedStateFromProps(props, state) {
+    const { options } = props;
+    console.log(options);
+    return { options: options.sort((a, b) => b.percentage - a.percentage) };
+  }
 
-  // triggerAnimation = () => {
-  //   console.log("triggering animation with: ", this.state.options);
-  //   let { originalOptions, options } = this.state;
-  //   const percentIncrease = originalOptions.map((v, i) => {
-  //     return parseFloat(v.percentage) / 100.0;
-  //   });
-  //   console.log(percentIncrease);
-
-  //   let intervali = 0;
-  //   this.animationTimer = setInterval(() => {
-  //     if (++intervali === 100) {
-  //       clearInterval(this.animationTimer);
-  //     }
-  //     options = options.map((option, i) => {
-  //       return {
-  //         ...option,
-  //         percentage: option.percentage + percentIncrease[i]
-  //       };
-  //     });
-  //     this.setState({ options });
-  //   }, 10);
-  // };
+  sortOptions = options => {
+    return options.sort((a, b) => b.percentage - a.percentage);
+  };
 
   getRandomColor = () => {
     var letters = "0123456789ABCDEF";
