@@ -46,7 +46,7 @@ const Bar = styled.div`
 `;
 
 const SecondBar = styled.div`
-  width: ${({ size }) => 100 - size}%;
+  width: ${({ size }) => size}%;
   height: 100%;
 `;
 
@@ -323,7 +323,7 @@ export default class Poll extends Component {
                 </Bar>
               )}
             </Spring>
-            <SecondBar boxes={noOfBoxes} size={option.percentage}>
+            <SecondBar boxes={noOfBoxes} size={100 - option.percentage}>
               {!this.isLeft(option.percentage) ? (
                 <DetailsContainer>
                   <Percentage
