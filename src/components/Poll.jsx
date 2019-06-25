@@ -63,7 +63,7 @@ const MainBar = styled.div`
 const DetailsContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex-${({ rightAlign }) => (rightAlign ? "end" : "start")};
+  justify-content: flex- ${({ rightAlign }) => (rightAlign ? "end" : "start")};
   width: 100%;
   height: 100%;
 `;
@@ -110,7 +110,7 @@ const Btns = styled.div`
   flex-wrap: no-wrap;
 `;
 
-const VoteBtn = styled.div`
+const VoteBtn = styled.button`
   padding: 0px ${({ padding }) => padding}px;
   cursor: pointer;
   position: relative;
@@ -118,6 +118,7 @@ const VoteBtn = styled.div`
   background-color: #fff;
   color: ${({ color }) => (color ? color : "red")};
   transition: 0.3s all ease;
+  border: none;
 
   &:hover {
     transition: 0.3s all ease;
@@ -152,10 +153,16 @@ const BoostBtn = styled(VoteBtn)`
 `;
 
 export default class Poll extends Component {
-  state = {
-    colors: [],
-    noOfBoxes: 0
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      votingMode: true,
+      colors: [],
+      noOfBoxes: 0,
+      flag: true
+    };
+  }
 
   componentDidMount() {
     const { options } = this.props;
@@ -165,6 +172,44 @@ export default class Poll extends Component {
     const colors = options.map(() => this.getRandomColor());
     this.setState({ colors, noOfBoxes });
   }
+
+  static getDerivedStateFromProps(props, state) {
+    if (state.flag) {
+      const options = props.options.map((v, i) => {
+        return { ...v, percentage: 0 };
+      });
+      return { originalOptions: props.options, options, flag: false };
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.votingMode && !this.state.votingMode) {
+      this.triggerAnimation();
+    }
+  }
+
+  triggerAnimation = () => {
+    console.log("triggering animation with: ", this.state.options);
+    let { originalOptions, options } = this.state;
+    const percentIncrease = originalOptions.map((v, i) => {
+      return parseFloat(v.percentage) / 100.0;
+    });
+    console.log(percentIncrease);
+
+    let intervali = 0;
+    this.animationTimer = setInterval(() => {
+      if (++intervali === 100) {
+        clearInterval(this.animationTimer);
+      }
+      options = options.map((option, i) => {
+        return {
+          ...option,
+          percentage: option.percentage + percentIncrease[i]
+        };
+      });
+      this.setState({ options });
+    }, 10);
+  };
 
   getRandomColor = () => {
     var letters = "0123456789ABCDEF";
@@ -177,7 +222,6 @@ export default class Poll extends Component {
 
   getFontSize = () => {
     const { noOfBoxes } = this.state;
-    console.log(noOfBoxes);
 
     if (noOfBoxes >= 1 && noOfBoxes <= 2) {
       return 23;
@@ -194,7 +238,6 @@ export default class Poll extends Component {
 
   getTextPadding = () => {
     const { noOfBoxes } = this.state;
-    console.log(noOfBoxes);
 
     if (noOfBoxes >= 1 && noOfBoxes <= 2) {
       return 20;
@@ -221,9 +264,17 @@ export default class Poll extends Component {
     return left;
   };
 
+  vote = option => {
+    this.setState({ votingMode: false });
+  };
+
+  boost = option => {
+    this.setState({ votingMode: false });
+  };
+
   render() {
-    const { colors, noOfBoxes } = this.state;
-    const { options } = this.props;
+    const { colors, noOfBoxes, votingMode, options } = this.state;
+    // const { options } = this.props;
     const fontSize = this.getFontSize();
     const padding = this.getTextPadding();
 
@@ -240,12 +291,20 @@ export default class Poll extends Component {
           {option.label}
         </CardLabel>
         <Btns>
-          <VoteBtn color={colors[i]} padding={padding}>
+          <VoteBtn
+            color={colors[i]}
+            padding={padding}
+            onClick={() => this.vote(option)}
+          >
             <BtnText boxes={noOfBoxes} fontSize={fontSize}>
               V{noOfBoxes < 7 ? "ote" : null}
             </BtnText>
           </VoteBtn>
-          <BoostBtn color={colors[i]} padding={padding}>
+          <BoostBtn
+            color={colors[i]}
+            padding={padding}
+            onClick={() => this.boost(option)}
+          >
             <BtnText boxes={noOfBoxes} fontSize={fontSize}>
               B{noOfBoxes < 7 ? "oost" : null}
             </BtnText>
@@ -257,7 +316,7 @@ export default class Poll extends Component {
     const results = (
       <SecondaryCard>
         {options.map((option, i) => (
-          <MainBar boxes={noOfBoxes}>
+          <MainBar key={option.label} boxes={noOfBoxes}>
             <Bar boxes={noOfBoxes} color={colors[i]} size={option.percentage}>
               {this.isLeft(option.percentage) ? (
                 <DetailsContainer rightAlign={true}>
@@ -278,7 +337,7 @@ export default class Poll extends Component {
                     noOfBoxes={noOfBoxes}
                     fontSize={noOfBoxes < 6 ? fontSize : 12}
                   >
-                    {option.percentage}%
+                    {option.percentage.toFixed(2)}%
                   </Percentage>
                 </DetailsContainer>
               ) : null}
@@ -291,7 +350,7 @@ export default class Poll extends Component {
                     noOfBoxes={noOfBoxes}
                     fontSize={noOfBoxes < 6 ? fontSize : 12}
                   >
-                    {option.percentage}%
+                    {option.percentage.toFixed(2)}%
                   </Percentage>
 
                   <SecondaryImage
@@ -314,6 +373,6 @@ export default class Poll extends Component {
       </SecondaryCard>
     );
 
-    return <Main>{results}</Main>;
+    return <Main>{votingMode ? votingButtons : results}</Main>;
   }
 }
